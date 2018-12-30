@@ -9,19 +9,28 @@ import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 
+import fr.wildcodeschool.mediaplayer.player.WildOnPlayerListener;
+import fr.wildcodeschool.mediaplayer.player.WildPlayer;
+
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
   // Audio player
   private WildPlayer mPlayer = null;
-  // Progress bar
-  private SeekBar mSeekbar = null;
-  // Seekbar update delay
+  // SeekBar
+  private SeekBar mSeekBar = null;
+  // SeekBar update delay
   private static final int SEEKBAR_DELAY = 1000;
-  // Thread used to update the seekbar position
+  // Thread used to update the SeekBar position
   private final Handler mSeekBarHandler = new Handler();
   private Runnable mSeekBarThread;
 
-  // Application Context is static in order to access it everywhere.
+  /**
+   * Application context accessor
+   * https://possiblemobile.com/2013/06/context/
+   */
   private static Context appContext;
+  public  static Context getAppContext() {
+    return appContext;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,36 +45,47 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     mPlayer.init(R.string.song, new WildOnPlayerListener() {
       @Override
       public void onPrepared(MediaPlayer mp) {
-        mSeekbar.setMax(mp.getDuration());
+        mSeekBar.setMax(mp.getDuration());
       }
 
       @Override
       public void onCompletion(MediaPlayer mp) {
         mSeekBarHandler.removeCallbacks(mSeekBarThread);
-        mSeekbar.setProgress(0);
+        mSeekBar.setProgress(0);
       }
     });
 
-    // Initialization of the seekbar
-    mSeekbar = findViewById(R.id.seekBar);
-    mSeekbar.setOnSeekBarChangeListener(this);
+    // Initialization of the SeekBar
+    mSeekBar = findViewById(R.id.seekBar);
+    mSeekBar.setOnSeekBarChangeListener(this);
 
-    // Thread used to update the seekbar position according to the audio player
+    // Thread used to update the SeekBar position according to the audio player
     mSeekBarThread = new Runnable() {
       @Override
       public void run() {
         // Widget should only be manipulated in UI thread
-        mSeekbar.post(() -> mSeekbar.setProgress(mPlayer.getCurrentPosition()));
+        mSeekBar.post(() -> mSeekBar.setProgress(mPlayer.getCurrentPosition()));
         // Launch a new request
         mSeekBarHandler.postDelayed(this, SEEKBAR_DELAY);
       }
     };
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    mPlayer.release();
+  }
+
+
+  // --------------------------------------------------------------------------
+  // SeekBar interface
+  // --------------------------------------------------------------------------
+
   /**
    * OnSeekBarChangeListener interface method implementation
    * @param seekBar Widget related to the event
-   * @param progress Current position on the seekbar
+   * @param progress Current position on the SeekBar
    * @param fromUser Define if it is a user action or a programmatic seekTo
    */
   @Override
@@ -99,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
   }
 
+
+  // --------------------------------------------------------------------------
+  // Buttons onClick
+  // --------------------------------------------------------------------------
+
   /**
    * On play button click
    * Launch the playback of the media
@@ -125,16 +150,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
    */
   public void resetMedia(View v) {
     if (null != mPlayer && mPlayer.reset()) {
-      mSeekbar.setProgress(0);
+      mSeekBar.setProgress(0);
     }
-  }
-
-  /**
-   * Application context accessor
-   * https://possiblemobile.com/2013/06/context/
-   * @return The application context
-   */
-  public static Context getAppContext() {
-    return appContext;
   }
 }

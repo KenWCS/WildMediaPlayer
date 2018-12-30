@@ -1,13 +1,17 @@
-package fr.wildcodeschool.mediaplayer;
+package fr.wildcodeschool.mediaplayer.player;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Log;
 
 import java.io.IOException;
 
-class WildPlayer implements WildAudioManagerListener {
+import fr.wildcodeschool.mediaplayer.player.manager.WildAudioManager;
+import fr.wildcodeschool.mediaplayer.player.manager.WildAudioManagerListener;
+
+public class WildPlayer implements WildAudioManagerListener {
   // Activity context
   private Context mContext;
   // Android media player
@@ -15,7 +19,7 @@ class WildPlayer implements WildAudioManagerListener {
   // media player prepared state
   private boolean isPrepared = false;
 
-  WildPlayer(Context ctx) {
+  public WildPlayer(@NonNull Context ctx) {
     mContext = ctx;
     mPlayer  = new MediaPlayer();
 
@@ -28,7 +32,7 @@ class WildPlayer implements WildAudioManagerListener {
    * @param song URI of media to play
    * @param listener onPrepared event listener
    */
-  void init(@StringRes int song, final WildOnPlayerListener listener) {
+  public void init(@StringRes int song, final WildOnPlayerListener listener) {
 
     try {
       // Set source and init the player engine
@@ -62,7 +66,7 @@ class WildPlayer implements WildAudioManagerListener {
    * Check the validity of player and call play command
    * @return The validity of the call
    */
-  boolean play() {
+  public boolean play() {
     if (null != mPlayer && isPrepared && !mPlayer.isPlaying()) {
       if (WildAudioManager.getInstance().requestAudioFocus()) {
         mPlayer.start();
@@ -76,7 +80,7 @@ class WildPlayer implements WildAudioManagerListener {
    * Check the validity of player and call pause command
    * @return The validity of the call
    */
-  boolean pause() {
+  public boolean pause() {
     if (null != mPlayer && isPrepared && mPlayer.isPlaying()) {
       mPlayer.pause();
       return true;
@@ -88,7 +92,7 @@ class WildPlayer implements WildAudioManagerListener {
    * Check the validity of player and call stop command
    * @return The validity of the call
    */
-  boolean reset() {
+  public boolean reset() {
     if (null != mPlayer && isPrepared) {
       mPlayer.seekTo(0);
       return true;
@@ -100,7 +104,7 @@ class WildPlayer implements WildAudioManagerListener {
    * Check the playing state of media
    * @return Media playing state
    */
-  boolean isPlaying() {
+  public boolean isPlaying() {
     if (null != mPlayer && isPrepared) {
       return mPlayer.isPlaying();
     }
@@ -111,7 +115,7 @@ class WildPlayer implements WildAudioManagerListener {
    * Check the validity of player and return media current position
    * @return Media current position
    */
-  int getCurrentPosition() {
+  public int getCurrentPosition() {
     if (null != mPlayer && isPrepared) {
       return mPlayer.getCurrentPosition();
     }
@@ -122,9 +126,19 @@ class WildPlayer implements WildAudioManagerListener {
    * Seek in the timeline
    * @param position Value in ms
    */
-  void seekTo(int position) {
+  public void seekTo(int position) {
     if (null != mPlayer && isPrepared) {
       mPlayer.seekTo(position);
+    }
+  }
+
+  /**
+   * Release the player
+   */
+  public void release() {
+    if (null != mPlayer && isPrepared) {
+      mPlayer.release();
+      WildAudioManager.getInstance().releaseAudioFocus();
     }
   }
 
