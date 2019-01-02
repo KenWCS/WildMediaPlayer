@@ -2,8 +2,8 @@ package fr.wildcodeschool.mediaplayer.player;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import android.util.Log;
 
 import java.io.IOException;

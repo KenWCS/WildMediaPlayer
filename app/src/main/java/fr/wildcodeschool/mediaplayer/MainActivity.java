@@ -3,11 +3,11 @@ package fr.wildcodeschool.mediaplayer;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import fr.wildcodeschool.mediaplayer.player.WildOnPlayerListener;
 import fr.wildcodeschool.mediaplayer.player.WildPlayer;
